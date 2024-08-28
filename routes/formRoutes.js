@@ -1,16 +1,14 @@
-// routes/formRoutes.js
-
 const express = require('express');
 const router = express.Router();
-const { renderForm , handleFormSubmit, viewData, downloadExcel ,renderDetailedAnalysisPage, compareMachines } = require('../controllers/formController');
+const { renderForm, handleFormSubmit } = require('../controllers/formController');
+const {renderDetailedAnalysisPage , compareMachines} = require('../controllers/analysisController');
+const {viewData, downloadExcel} = require('../controllers/viewController');
 
 router.get('/', renderForm);
 router.post('/submit', handleFormSubmit);
-router.get('/view', viewData);
 router.get('/analysis', renderDetailedAnalysisPage);
-router.get('/download-excel', downloadExcel);
 router.get('/compare', compareMachines);
-
-
+router.get('/view', viewData);
+router.get('/download-excel', downloadExcel);
 
 module.exports = router;
