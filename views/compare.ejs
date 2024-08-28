@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Comparison</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="/">From and compare</a></li>
+            <li><a href="/view">View Data</a></li>
+            <li><a href="/analysis"> Detailed Analysis</a></li>
+        </ul>
+    </nav>
+
+    <h1>Machine Comparison</h1>
+
+    <% if (comparisons.length) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>Machine</th>
+                    <th>Total Time (Hours)</th>
+                    <th>Occurrences</th>
+                    <th>Most Occurred Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% comparisons.forEach(comp => { %>
+                    <tr>
+                        <td><%= comp.machine %></td>
+                        <td><%= comp.totalTime %></td>
+                        <td><%= comp.count %></td>
+                        <td>
+                            <%= comp.mostOccurredError.error %> 
+                            (Occurred <%= comp.mostOccurredError.count %> times)
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No comparison data available.</p>
+    <% } %>
+</body>
+</html>

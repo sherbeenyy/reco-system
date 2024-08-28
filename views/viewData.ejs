@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Data</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="/">Form and compare</a></li>
+            <li><a href="/view">View</a></li>
+            <li><a href="/analysis">Detailed Analysis</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Data View</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Machine Name</th>
+                    <th>Type of Error</th>
+                    <th>Start Date</th>
+                    <th>Start Time</th>
+                    <th>End Date</th>
+                    <th>End Time</th>
+                    <th>What Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.forEach(record => { %>
+                    <tr>
+                        <td><%= record.machineName %></td>
+                        <td><%= record.typeOfError %></td>
+                        <td><%= record.startDate %></td>
+                        <td><%= record.startTime %></td>
+                        <td><%= record.endDate %></td>
+                        <td><%= record.endTime %></td>
+                        <td><%= record.whatError %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <button id="downloadExcel">Click to Download an Excel file</button>
+
+    <script>
+        document.getElementById('downloadExcel').addEventListener('click', () => {
+            window.location.href = '/download-excel';
+        });
+    </script>
+</body>
+</html>

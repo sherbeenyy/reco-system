@@ -1,0 +1,150 @@
+<!-- views/form.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Error Form</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="/">Form and compare</a></li>
+            <li><a href="/view">View</a></li>
+            <li><a href="/analysis">Detailed Analysis</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+    <form id="errorForm" action="/submit" method="POST">
+        <h1>Error Recording Sheet</h1>
+        <label for="machineName">Machine Name:</label>
+        <select id="machineName" name="machineName" required>
+            <option value="" disabled selected>Select a machine</option>
+            <% Object.keys(machineErrors).forEach(machine => { %>
+                <option value="<%= machine %>" <%= selectedMachine === machine ? 'selected' : '' %>>
+                    <%= machine %>
+                </option>
+            <% }) %>
+        </select><br>
+
+        <label for="typeOfError">Type of Error:</label>
+        <select id="typeOfError" name="typeOfError" required>
+            <option value="" disabled selected>Select error type</option>
+            <option value="mechanical" <%= selectedErrorType === 'mechanical' ? 'selected' : '' %>>Mechanical</option>
+            <option value="electrical" <%= selectedErrorType === 'electrical' ? 'selected' : '' %>>Electrical</option>
+        </select><br>
+
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required><br>
+
+        <label for="startTime">Start Time:</label>
+        <input type="time" id="startTime" name="startTime" required><br>
+
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required><br>
+
+        <label for="endTime">End Time:</label>
+        <input type="time" id="endTime" name="endTime" required><br>
+
+        <label for="whatError">What Error:</label>
+        <select id="whatError" name="whatError" required>
+            <option value="" disabled selected>Select an error</option>
+        </select><br>
+
+        <button type="submit">Submit</button>
+    </form>
+<div class="container">
+    <form id="compareForm" action="/compare" method="GET">
+        <h1>Compare Machines</h1>
+        <label for="machine1">Machine 1:</label>
+        <select id="machine1" name="machine1" required>
+            <option value="" disabled selected>Select Machine 1</option>
+            <% Object.keys(machineErrors).forEach(machine => { %>
+                <option value="<%= machine %>"><%= machine %></option>
+            <% }) %>
+        </select><br>
+
+        <label for="machine2">Machine 2:</label>
+        <select id="machine2" name="machine2" required>
+            <option value="" disabled selected>Select Machine 2</option>
+            <% Object.keys(machineErrors).forEach(machine => { %>
+                <option value="<%= machine %>"><%= machine %></option>
+            <% }) %>
+        </select><br>
+
+        <button type="submit">Compare</button>
+    </form>
+</div>
+</div>
+<script>
+
+
+      
+  
+  // Safely output the machineErrors object as JSON
+  const machineErrors = <%- JSON.stringify(machineErrors || {}) %>;
+  console.log("Script is running");
+  console.log("machineErrors:", machineErrors);
+
+  const machineSelect = document.getElementById('machineName');
+  const errorTypeSelect = document.getElementById('typeOfError');
+  const whatErrorSelect = document.getElementById('whatError');
+  const startDateInput = document.getElementById('startDate');
+  const startTimeInput = document.getElementById('startTime');
+  const endDateInput = document.getElementById('endDate');
+  const endTimeInput = document.getElementById('endTime');
+
+  function updateErrors() {
+      const machine = machineSelect.value;
+      const errorType = errorTypeSelect.value;
+
+      // Clear existing options
+      while (whatErrorSelect.options.length) {
+          whatErrorSelect.remove(0);
+      }
+
+      if (machine && errorType) {
+          const errors = (machineErrors[machine] && machineErrors[machine][errorType]) || [];
+          errors.forEach(error => {
+              const option = document.createElement('option');
+              option.value = error;
+              option.text = error;
+              whatErrorSelect.add(option);
+          });
+      } else {
+          const option = document.createElement('option');
+          option.value = '';
+          option.text = 'Select an error';
+          option.disabled = true;
+          option.selected = true;
+          whatErrorSelect.add(option);
+      }
+  }
+  function validateDates() {
+      const startDate = new Date(startDateInput.value);
+      const startTime = startTimeInput.value ? new Date(`1970-01-01T${startTimeInput.value}`) : null;
+      const endDate = new Date(endDateInput.value);
+      const endTime = endTimeInput.value ? new Date(`1970-01-01T${endTimeInput.value}`) : null;
+
+      if (startDate > endDate || (startDate.getTime() === endDate.getTime() && startTime && endTime && startTime > endTime)) {
+          alert('End date/time cannot be before start date/time.');
+          endDateInput.value = '';
+          endTimeInput.value = '';
+          return false;
+      }
+      return true;
+  }
+
+  // Attach event listeners
+  machineSelect.addEventListener('change', updateErrors);
+  errorTypeSelect.addEventListener('change', updateErrors);
+  startDateInput.addEventListener('change', validateDates);
+  startTimeInput.addEventListener('change', validateDates);
+  endDateInput.addEventListener('change', validateDates);
+  endTimeInput.addEventListener('change', validateDates);
+  
+</script>
+</body>
+</html>

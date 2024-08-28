@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Analysis</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+        <li><a href="/">Form and compare</a></li>
+        <li><a href="/view">View</a></li>
+        <li><a href="/analysis"> Detailed Analysis</a></li>
+    </ul>
+    </nav>
+<div class="container">
+    <h1>Detailed Analysis</h1>
+    <label for="machineSelect">Machine:</label>
+    <select id="machineSelect">
+        <option value="" disabled selected>Select a machine</option>
+        <% Object.keys(machineErrors).forEach(machine => { %>
+            <option value="<%= machine %>"><%= machine %></option>
+        <% }) %>
+    </select><br>
+
+    <label for="errorTypeSelect">Error Type:</label>
+    <select id="errorTypeSelect" disabled>
+        <option value="" disabled selected>Select error type</option>
+    </select><br>
+
+    <label for="whatErrorSelect">What Error:</label>
+    <select id="whatErrorSelect" disabled>
+        <option value="" disabled selected>Select an error</option>
+    </select><br>
+
+    <h2>Results</h2>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>What Error</th>
+                <th>Total Duration (Hours)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Results will be injected here by JavaScript -->
+        </tbody>
+    </table>
+</div>
+    <script>
+        const machineErrors = <%- JSON.stringify(machineErrors || {}) %>;
+    const analysisData = <%- JSON.stringify(analysisData || {}) %>;
+
+    const machineSelect = document.getElementById('machineSelect');
+    const errorTypeSelect = document.getElementById('errorTypeSelect');
+    const whatErrorSelect = document.getElementById('whatErrorSelect');
+    const resultsTableBody = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+
+    const updateErrorTypes = () => {
+        const machine = machineSelect.value;
+        const errorTypes = machineErrors[machine] || {};
+        
+        while (errorTypeSelect.options.length) {
+            errorTypeSelect.remove(0);
+        }
+
+        const defaultOption = document.createElement('option');
+        defaultOption.text = 'Select error type';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        errorTypeSelect.add(defaultOption);
+
+        Object.keys(errorTypes).forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.text = type.charAt(0).toUpperCase() + type.slice(1);
+            errorTypeSelect.add(option);
+        });
+
+        errorTypeSelect.disabled = !machine;
+        whatErrorSelect.disabled = true;
+        resultsTableBody.innerHTML = '';
+    };
+
+    const updateWhatErrors = () => {
+        const machine = machineSelect.value;
+        const errorType = errorTypeSelect.value;
+        const errors = (machineErrors[machine] && machineErrors[machine][errorType]) || [];
+        
+        while (whatErrorSelect.options.length) {
+            whatErrorSelect.remove(0);
+        }
+
+        const defaultOption = document.createElement('option');
+        defaultOption.text = 'Select an error';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        whatErrorSelect.add(defaultOption);
+
+        errors.forEach(error => {
+            const option = document.createElement('option');
+            option.value = error;
+            option.text = error;
+            whatErrorSelect.add(option);
+        });
+
+        whatErrorSelect.disabled = !errorType;
+        resultsTableBody.innerHTML = '';
+    };
+
+    const updateResults = () => {
+        const machine = machineSelect.value;
+        const errorType = errorTypeSelect.value;
+        const whatError = whatErrorSelect.value;
+
+        const results = analysisData[machine] && analysisData[machine][errorType] && analysisData[machine][errorType][whatError] || 0;
+
+        resultsTableBody.innerHTML = '';
+
+        if (results) {
+            const row = resultsTableBody.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            cell1.textContent = whatError;
+            cell2.textContent = results.toFixed(2);
+        }
+    };
+
+    machineSelect.addEventListener('change', updateErrorTypes);
+    errorTypeSelect.addEventListener('change', updateWhatErrors);
+    whatErrorSelect.addEventListener('change', updateResults);
+    </script>
+</body>
+</html>
